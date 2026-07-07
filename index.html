@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monster百家輔助</title>
+  <link rel="icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#111111" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <style>
+.subvalue{margin-top:6px;font-size:13px;opacity:.75}
+.pill.btn{cursor:pointer;border:none}
+.pill.btn:active{transform:translateY(1px)}
+
+
+/* Hand chips UI (A-style) */
+.hand-wrap{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+.hand-chips{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.card-chip{display:inline-flex;align-items:center;justify-content:center;
+  min-width:44px;height:36px;padding:0 12px;
+  border-radius:999px;
+  font-size:16px;font-weight:900;letter-spacing:.5px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 10px 22px rgba(0,0,0,.35);}
+.hand-p .card-chip{display:inline-flex;align-items:center;justify-content:center;
+  min-width:44px;height:36px;padding:0 12px;
+  border-radius:999px;
+  font-size:16px;font-weight:900;letter-spacing:.5px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 10px 22px rgba(0,0,0,.35);}
+.hand-b .card-chip{display:inline-flex;align-items:center;justify-content:center;
+  min-width:44px;height:36px;padding:0 12px;
+  border-radius:999px;
+  font-size:16px;font-weight:900;letter-spacing:.5px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 10px 22px rgba(0,0,0,.35);}
+.card-chip.is-last{border-color:rgba(255,255,255,.32); background:rgba(255,255,255,.12);}
+.hand-meta{font-size:13px;opacity:.82;}
+
+
+/* UI polish v1.47 */
+.card{border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);} .result-big{font-size:64px;font-weight:800;} .glow-blue{color:#4da3ff;} .glow-red{color:#ff4d4d;} .glow-green{color:#38e27d;}
+
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",Helvetica,Arial,sans-serif;margin:0;background:#0b0b0b;color:#f1f1f1}
+    header{padding:16px 16px 8px;border-bottom:1px solid #222;background:#0f0f0f;position:sticky;top:0;z-index:50}
+    h1{font-size:18px;margin:0 0 6px}
+    .sub{font-size:13px;color:#bdbdbd;line-height:1.35}
+    main{padding:16px;max-width:760px;margin:0 auto}
+    .card{background:#111;border:1px solid #222;border-radius:12px;padding:14px;margin-bottom:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    input[type=text]{flex:1;min-width:240px;background:#0c0c0c;border:1px solid #2a2a2a;color:#fff;border-radius:10px;padding:12px;font-size:16px}
+    button{background:#1b1b1b;border:1px solid #2a2a2a;color:#fff;border-radius:10px;padding:12px 14px;font-size:15px}
+    button.primary{background:#2a2a2a}
+    button:active{transform:translateY(1px)}
+    .hint{font-size:13px;color:#bdbdbd;margin-top:8px;line-height:1.35}
+    .kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .kpi .box{border:1px solid #222;border-radius:12px;padding:12px;background:#0e0e0e}
+    .kpi .label{font-size:12px;color:#bdbdbd}
+    .kpi .value{font-size:18px;margin-top:6px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    .log{max-height:340px;overflow:auto;border:1px solid #222;border-radius:12px;padding:10px;background:#0e0e0e}
+    .line{padding:8px;border-bottom:1px dashed #222}
+    .line:last-child{border-bottom:0}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #333;background:#141414;margin-left:6px;font-size:12px;color:#cfcfcf}
+    .good{border-color:#2f6b2f}
+    .bad{border-color:#6b2f2f}
+    .muted{color:#bdbdbd}
+    a{color:#9ad1ff}
+  
+.kpi .wide{grid-column: span 2;}
+
+
+/* 桌機也維持手機版寬度，避免撐開跑版 */
+main{
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+header{
+  max-width: 520px;
+  margin: 0 auto;
+;z-index:50}
+
+/* --- Keypad UI v1.47 (Baccarat style) --- */
+#cardPad{
+  display:grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap:10px;
+}
+
+button.key{
+  position:relative;
+  height:72px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.35);
+  color:#fff;
+  font-weight:800;
+  font-size:26px;
+  letter-spacing:0.5px;
+}
+
+button.key .keyText{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  line-height:1;
+}
+
+button.key.selected{
+  border:2px solid rgba(26, 255, 155, 0.9);
+  background: rgba(0, 210, 120, 0.18);
+  box-shadow: 0 0 0 2px rgba(0, 210, 120, 0.18), 0 10px 22px rgba(0,0,0,0.35);
+}
+
+button.key.keyBack{
+  font-size:22px;
+  font-weight:700;
+}
+
+button.key.keyBack .keyText{
+  font-size:22px;
+  opacity:0.9;
+}
+
+button.key .badgeWrap{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.badge{
+  position:absolute;
+  min-width:28px;
+  height:24px;
+  padding:0 8px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:800;
+  color:#fff;
+  box-shadow:0 6px 14px rgba(0,0,0,0.35);
+}
+
+.badgeP{ background:#2b7bff; right:8px; top:8px; }
+.badgeB{ background:#ff3b3b; left:8px; top:8px; }
+.badgeS{ background:#16c784; right:8px; bottom:8px; }
+.badgeN{ background:rgba(255,255,255,0.12); left:8px; bottom:8px; }
+
+@media (max-width:420px){
+  button.key{ height:64px; font-size:24px; }
+  .badge{ height:22px; min-width:26px; font-size:13px; }
+}
+
+/* Hide old backspace button row if present */
+#keypadBackspaceBtn{ display:none !important; }
+
+
+/* Side indicators are auto-controlled in v1.40 */
+#sidePlayer, #sideBanker{ pointer-events:none; }
+
+
+/* v1.40: log undo button placement */
+.log-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.log-left{flex:1;min-width:0}
+.undo-btn{white-space:nowrap;padding:8px 12px;font-weight:800;opacity:1}
+@media (max-width:420px){
+  .undo-btn{padding:7px 10px}
+}
+
+
+/* Tabs A-F */
+.tabbar{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+  justify-content:end; /* 靠右 */
+}
+.tabbar .tab{min-width:36px;height:30px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.26);background:rgba(255,255,255,.10);color:#fff;font-weight:900;letter-spacing:.5px;cursor:pointer}
+.tabbar .tab.active{border-color:rgba(0,255,170,.65);background:rgba(0,255,170,.12);box-shadow:0 0 0 2px rgba(0,255,170,.12)}
+.tabbar .tab:active{transform:translateY(1px)}
+
+
+/* Header row for tabs */
+.header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.header-titles{min-width:0}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-row">
+    <div class="header-titles">
+      <h1>百家輔助系統 <span id="verBadge" style="font-size:14px; font-weight:700; opacity:.75;">v1.47</span></h1>
+      <div class="sub">僅供輔助參考，切勿沉迷。</div>
+    </div>
+    <div id="tabbar" class="tabbar" aria-label="分頁">
+    <button class="tab active" data-tab="A" type="button">A</button>
+    <button class="tab" data-tab="B" type="button">B</button>
+    <button class="tab" data-tab="C" type="button">C</button>
+    <button class="tab" data-tab="D" type="button">D</button>
+    <button class="tab" data-tab="E" type="button">E</button>
+    <button class="tab" data-tab="F" type="button">F</button>
+  </div>
+  </div>
+</header>
+<div class="card">
+<div class="row" style="gap:8px;">
+      <div class="box" style="flex:1;min-width:240px;">
+        <div class="label">閒牌</div>
+        <div class="value mono" id="pCardsDisp">（空）</div>
+      </div>
+      <div class="box" style="flex:1;min-width:240px;">
+        <div class="label">莊牌</div>
+        <div class="value mono" id="bCardsDisp">（空）</div>
+      </div>
+<div id="inputStatus" class="muted" style="margin-top:6px; font-size:13px;"></div>
+
+    </div>
+<div id="cardPad" class="row" style="margin-top:10px;gap:8px;"></div>
+
+    <div class="row" style="margin-top:10px;">
+      <button class="primary" id="submitKeypadBtn">送出</button>
+      <button id="clearBothBtn">全部清空</button>
+    </div>
+
+    <div class="card" id="fnPanel">
+      <div class="row">
+        <button id="resetShoeBtn" type="button">重置牌靴</button>
+        <button id="clearLogBtn" type="button">清除紀錄</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  <div class="card">
+    <div class="kpi">
+      <div class="box wide">
+        <div class="label">下局建議下注</div>
+        <div class="value mono" id="nextPick">—</div>
+      </div>
+      <div class="box wide">
+        <div class="label">本局勝利</div>
+        <div class="value mono" id="thisWin">—</div>
+      </div>
+      <div class="box">
+        <div class="label">目前第幾局</div>
+        <div class="value" id="handNo">0</div>
+      </div>
+      <div class="box">
+        <div class="label">結果統計（莊 / 閒 / 和）</div>
+        <div class="value" id="wlt">0 / 0 / 0</div>
+      </div>
+      <div class="box">
+        <div class="label">主注建議（照建議押）的成績（贏 / 輸 / 和 / 略過）</div>
+        <div class="value" id="pickStats">0 / 0 / 0 / 0</div>
+      </div>
+
+      <div class="box">
+        <div class="label">近7局主注</div>
+        <div class="value" id="pick7">0 / 7 勝</div>
+        <div class="subvalue" id="pick7Prog">進度：0 / 7</div>
+      </div>
+
+</div>
+</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label muted" style="margin-bottom:8px;">紀錄（最新在上）</div>
+    
+<div class="row" style="justify-content:space-between; align-items:center; gap:10px; margin:6px 0;">
+  <div class="muted" id="courseStatus" style="font-size:13px;">課程狀態：未完成（0 / 6）</div>
+  <button id="downloadCsvBtn" type="button" disabled>下載紀錄</button>
+</div>
+
+<div class="log" id="log"></div>
+    <div class="hint">
+      離線安裝：Safari 開啟後 → 分享 →「加入主畫面」。首次需要有網路/HTTPS載入一次，之後可離線使用。
+    </div>
+  </div>
+
+<div id="buildInfo" class="muted" style="text-align:center; font-size:12px; opacity:.6; padding:10px 0;">Build: v1.47</div>
+</main>
+
+<script src="app.js?ver=1.47"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>
